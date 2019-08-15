@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Flask,Python,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="CRJ" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="两个核心依赖falsk主要依赖两个库 —— Werkzeug 和 Jinja。 Jinja2由于大多数Web程序都需要渲染模板，与Jinja2集成可以减少大量的工作。此处不展开讨论。 WerkzeugFlask的核心扩展就是Werkzeug。 python Web框架都需要处理WSGI交互，它是为了让Web服务器与python程序能够进行数据交流而定义的一套==接口标准/规范==。而Werkzeu">
+<meta name="keywords" content="Flask,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask源码解析">
+<meta property="og:url" content="https://sssmeb.github.io/2019/05/12/Flask源码解析/index.html">
+<meta property="og:site_name" content="CRJ">
+<meta property="og:description" content="两个核心依赖falsk主要依赖两个库 —— Werkzeug 和 Jinja。 Jinja2由于大多数Web程序都需要渲染模板，与Jinja2集成可以减少大量的工作。此处不展开讨论。 WerkzeugFlask的核心扩展就是Werkzeug。 python Web框架都需要处理WSGI交互，它是为了让Web服务器与python程序能够进行数据交流而定义的一套==接口标准/规范==。而Werkzeu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3497197836,1903906446&fm=173&s=C0231E741767451B4460D8DD020090B1&w=638&h=639&img.JPEG">
+<meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3490576137,4161798228&fm=26&gp=0.jpg">
+<meta property="og:image" content="https://images2018.cnblogs.com/blog/1426593/201807/1426593-20180714110358443-1991593952.png">
+<meta property="og:updated_time" content="2019-08-15T08:56:17.924Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flask源码解析">
+<meta name="twitter:description" content="两个核心依赖falsk主要依赖两个库 —— Werkzeug 和 Jinja。 Jinja2由于大多数Web程序都需要渲染模板，与Jinja2集成可以减少大量的工作。此处不展开讨论。 WerkzeugFlask的核心扩展就是Werkzeug。 python Web框架都需要处理WSGI交互，它是为了让Web服务器与python程序能够进行数据交流而定义的一套==接口标准/规范==。而Werkzeu">
+<meta name="twitter:image" content="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3497197836,1903906446&fm=173&s=C0231E741767451B4460D8DD020090B1&w=638&h=639&img.JPEG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sssmeb.github.io/2019/05/12/Flask源码解析/">
+
+
+
+
+
+  <title>Flask源码解析 | CRJ</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CRJ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home                          //首页"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive          //归档"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th           //分类"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags                     //标签"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user                   //关于"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/05/12/Flask源码解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Flask源码解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-12T17:26:49+08:00">
+                2019-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="两个核心依赖"><a href="#两个核心依赖" class="headerlink" title="两个核心依赖"></a>两个核心依赖</h1><p>falsk主要依赖两个库 —— Werkzeug 和 Jinja。</p>
+<h2 id="Jinja2"><a href="#Jinja2" class="headerlink" title="Jinja2"></a>Jinja2</h2><p>由于大多数Web程序都需要渲染模板，与Jinja2集成可以减少大量的工作。此处不展开讨论。</p>
+<h2 id="Werkzeug"><a href="#Werkzeug" class="headerlink" title="Werkzeug"></a>Werkzeug</h2><p><strong>Flask的核心扩展就是Werkzeug。</strong></p>
+<p>python Web框架都需要处理WSGI交互，它是为了让Web服务器与python程序能够进行数据交流而定义的一套==接口标准/规范==。而Werkzeug是一个优秀的WSGI工具库。</p>
+<pre><code>HTTP请求 -》 WSGI规定的数据格式 -》 Web程序</code></pre><p>从路由处理，到请求解析，再到响应封装，以及上下文和各种数据结构都离不开Werkzeug。</p>
+<img src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3497197836,1903906446&fm=173&s=C0231E741767451B4460D8DD020090B1&w=638&h=639&img.JPEG" width="400" hegith="300">
+
+<h3 id="WSGI程序"><a href="#WSGI程序" class="headerlink" title="WSGI程序"></a>WSGI程序</h3><p>根据WSGI的规定，Web程序（WSGI程序）必须是一个可调用对象。这个可调用对象接收两个参数：</p>
+<ul>
+<li>environ：包含了请求的所有信息的字典。</li>
+<li>start_response：需要在可调用对象中调用的函数，用来发起响应，参数是状态码，响应头部等</li>
+</ul>
+<p>WSGI服务器会在调用这个可调用对象时传入这两个参数。另外这个可调用对象还要返回一个可迭代对象。</p>
+<p>这个可调用对象可以是函数、方法、类或是实现了<strong>call</strong>方法的类实例。</p>
+<p>以下借助简单的实例来了解最主要的两种实现：函数和类</p>
+<pre><code># 函数实现
+
+# 可调用对象    接收两个参数
+def hello(environ, start_response):
+    # 响应信息
+    status = &apos;200 OK&apos;
+    response_headers = [(&apos;Content-type&apos;, &apos;text/html&apos;)]
+    # 需要在可调用函数中调用的函数
+    start_response(status, response_headers)
+    # 返回可迭代对象
+    return [b&apos;&lt;h1&gt;Hello&lt;/h1&gt;&apos;]</code></pre><blockquote>
+<p>注：WSGI规定请求和响应主体应该为字符串(bytestrings)，即py2中的str。在py3中字符串默认为unicode类型，因此需要在字符串前添加b声明为bytes类型,兼容两者</p>
+</blockquote>
+<pre><code># 类实现
+
+class AppClass:
+
+    def __init__(self, environ, start_response):
+        self.environ = environ
+        self.statr = start_response
+
+    # iter方法，这个类被迭代时，调用这个方法
+    # 实现该方法的类就是迭代器
+    def __iter__(self):
+        status = &apos;200 OK&apos;
+        response_headers = [(&apos;Content-type&apos;, &apos;text/html&apos;)]
+        self.start(status, response_headers)
+        yield b&apos;&lt;h1&gt;Hello&lt;/h1&gt;&apos;</code></pre><h4 id="werkzeug中如何实现Web程序"><a href="#werkzeug中如何实现Web程序" class="headerlink" title="werkzeug中如何实现Web程序"></a>werkzeug中如何实现Web程序</h4><p>由于flask是基于werkzeug实现的，所以先了解以下werkzeug是如何实现一个简单的web程序</p>
+<pre><code>from werkzeug.wrappers import Request, Response
+
+@Request.application
+def hello(request):
+    return Response(&apos;hello&apos;)
+
+if __name__ == &apos;__main__&apos;:
+    from werkzeug.serving import run_simple
+    run_simple(&apos;localhost&apos;, 5000, hello)</code></pre><p>通过以上代码，使用<strong>run_simple</strong>规定了ip、端口号、调用对象</p>
+<h1 id="路由是怎么设定的？"><a href="#路由是怎么设定的？" class="headerlink" title="路由是怎么设定的？"></a>路由是怎么设定的？</h1><h2 id="Werkzeug怎么实现路由系统"><a href="#Werkzeug怎么实现路由系统" class="headerlink" title="Werkzeug怎么实现路由系统"></a>Werkzeug怎么实现路由系统</h2><pre><code># 路由表
+m = Map()
+rule1 = Rule(&apos;/&apos;, endpoint=&apos;index&apos;)
+rule2 = Rule(&apos;/downloads/&apos;, endpoint=&apos;downloads/index&apos;)
+m.add(rule1)
+m.add(rule2)</code></pre><h2 id="Flask的路由系统"><a href="#Flask的路由系统" class="headerlink" title="Flask的路由系统"></a>Flask的路由系统</h2><p>Flask使用中的路由系统，是通过route() 装饰器来将视图函数注册为路由。进入route函数</p>
+<pre><code>def route(self, rule, **options):
+    def decorator(f):
+        endpoint = options.pop(&quot;endpoint&quot;, None)
+        self.add_url_rule(rule, endpoint, f, **options)
+        return f
+
+    return decorator</code></pre><p>可见内部调用了add_url_rule，并将函数作为参数传入。看到add_url_rule存在关键的语句</p>
+<pre><code># url_map实际上就是Map类的实例
+# rule就是通过route相关更正成的Rule实例
+self.url_map.add(rule)
+
+# view_functions是一个字典，存储了端点和视图函数的映射关系。可用于查询
+self.view_functions[endpoint] = view_func</code></pre><p>再进入底层就会发现，实际上就同上例的werkzeug实现</p>
+<h1 id="导入config配置参数"><a href="#导入config配置参数" class="headerlink" title="导入config配置参数"></a>导入config配置参数</h1><p>最初，我们修改配置文件会使用以下方法</p>
+<pre><code>app.config[&apos;DEGUB&apos;] = True</code></pre><p>导入参数</p>
+<pre><code>import config
+app.config.from_object(config)
+
+# 在config.py 文件中 存放配置参数
+DEBUG = True
+SECRET_KEY = os.urandom(24)
+DIALECT = &apos;mysql&apos;
+DRIVER = &apos;mysqlconnector&apos;
+USERNAME = &apos;root&apos;
+PASSWORD = &apos;root&apos;
+HOST = &apos;127.0.0.1&apos;
+PORT = &apos;3306&apos;
+DATABASE = &apos;test&apos;</code></pre><p>如果自定义了配置文件类也可传入字符串</p>
+<pre><code>app.config.from_object(&apos;config.Foo&apos;)
+# 以上代表 config.py文件中的 Foo类</code></pre><p>进入from_object() 函数 [位于config.py]</p>
+<pre><code>def from_object(self, obj):
+    if isinstance(obj, string_types):
+        obj = import_string(obj)
+    for key in dir(obj):
+        if key.isupper():
+            self[key] = getattr(obj, key)</code></pre><p>首先判断如果是字符串类型的，做相应处理获得对象。在import_string函数中</p>
+<pre><code>module_name, obj_name = import_name.rsplit(&quot;.&quot;, 1)
+module = __import__(module_name, globals(), locals(), [obj_name])</code></pre><p>dir()函数的作用：</p>
+<pre><code>dir() 函数不带参数时，返回当前范围内的变量、方法和定义的类型列表；
+带参数时，返回参数的属性、方法列表。
+如果参数包含方法__dir__()，该方法将被调用。
+如果参数不包含__dir__()，该方法将最大限度地收集参数信息。</code></pre><p>获取属性后判断是否为<strong>大写</strong>，是则添加为配置参数</p>
+<h2 id="用类导入配置的作用"><a href="#用类导入配置的作用" class="headerlink" title="用类导入配置的作用"></a>用类导入配置的作用</h2><p>在开发和线上，往往采用的不是相同的配置文件。我们可以通过类封装几套配置文件以供使用。</p>
+<p>可以编写一个基础类，在开发测试、线上运行都相同、都需要的配置参数。再通过继承，扩展不同环境下的不同配置参数。</p>
+<p>则在不同的环境下，只需要改变from_object() 中的参数即可。</p>
+<h1 id="Flask如何处理请求"><a href="#Flask如何处理请求" class="headerlink" title="Flask如何处理请求"></a>Flask如何处理请求</h1><h2 id="app程序对象"><a href="#app程序对象" class="headerlink" title="app程序对象"></a>app程序对象</h2><p>在一些Python web框架中，视图函数类似</p>
+<pre><code>@route(&apos;/&apos;)
+def index():
+    return &apos;hello&apos;</code></pre><p>但在flask中</p>
+<pre><code>@app.route(&apos;/&apos;)
+def index():
+    return &apos;hello&apos;</code></pre><p>flask 中存在一个显式的程序对象，我们需要在全局空间中创建它。设计原因主要包括：</p>
+<ul>
+<li>相较于隐式程序对象，同一时间只能有一个实例存在，显式的程序对象允许多个程序实例存在。</li>
+<li>允许通过子类化Flask类来改变程序行为。</li>
+<li>允许通过工厂函数来创建程序实例，可以在不同的地方传入不同的配置来创建不同的程序实例。</li>
+<li>允许通过蓝本来模块化程序。</li>
+</ul>
+<h2 id="启动app-run"><a href="#启动app-run" class="headerlink" title="启动app.run()"></a>启动app.run()</h2><p>在Flask类中</p>
+<p>当调用app.run()，程序启动。我们查看run()函数的源码</p>
+<pre><code>from werkzeug.serving import run_simple
+
+try:
+    run_simple(host, port, self, **options)
+finally:
+    # reset the first request information if the development server
+    # reset normally.  This makes it possible to restart the server
+    # without reloader and that stuff from an interactive shell.
+    self._got_first_request = False</code></pre><p>可见run_simple函数，而第三个参数是self，即flask对象。</p>
+<p>当调用对象时，python会执行<code>__call__</code>方法。</p>
+<p>进入Flask() 类可以看到</p>
+<pre><code>    def wsgi_app(self, environ, start_response):
+        ctx = self.request_context(environ)
+        error = None
+        try:
+            try:
+                ctx.push()
+                response = self.full_dispatch_request()
+            except Exception as e:
+                error = e
+                response = self.handle_exception(e)
+            except:  # noqa: B001
+                error = sys.exc_info()[1]
+                raise
+            return response(environ, start_response)
+        finally:
+            if self.should_ignore_error(error):
+                error = None
+            ctx.auto_pop(error)
+
+def __call__(self, environ, start_response):
+    &quot;&quot;&quot;The WSGI server calls the Flask application object as the
+    WSGI application. This calls :meth:`wsgi_app` which can be
+    wrapped to applying middleware.&quot;&quot;&quot;
+    return self.wsgi_app(environ, start_response)</code></pre><p>当请求到来时，程序在调用app时，由于实现了<code>__call__</code>函数，则通过该函数调用了wsgi_app()函数</p>
+<p>具体分析wsgi_app函数：</p>
+<ol>
+<li>生成request请求对象和请求上下文（封装在request_context函数里）</li>
+<li>将生成的请求上下文（本次请求的环境）push入栈，存储。</li>
+<li>请求进入预处理（例如before_request），错误处理及请求转发到响应的过程（full_dispatch_request函数）</li>
+</ol>
+<p>详情查看：</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/bestallen/article/details/54342120" target="_blank" rel="noopener">https://blog.csdn.net/bestallen/article/details/54342120</a></p>
+</blockquote>
+<h3 id="before-request-after-request"><a href="#before-request-after-request" class="headerlink" title="before_request\after_request"></a>before_request\after_request</h3><p>在平常使用中，我们还会使用装饰器before_request对某些请求执行前做一些相关操作。</p>
+<p>我们进入before_request源码中，可以看到实际上就一行代码</p>
+<pre><code>def before_request(self, f):
+    self.before_request_funcs.setdefault(None, []).append(f)
+    return f</code></pre><p>并且从源码中可以看到before_request_funcs只是Flask类中初始化的一个空字典。所以以上函数就是将字典设置为</p>
+<pre><code>{
+    None : [func1, func2...]    
+}</code></pre><p>键为none，值为存储了before_request函数的列表</p>
+<p>回头再看到当请求到达时，<code>__call__</code>调用wsgi_aqq函数</p>
+<pre><code># 先是将请求相关的资源环境封装成请求上下文对象 并入栈
+ctx = self.request_context(environ)
+error = None
+try:
+    try:
+        ctx.push()
+        response = self.full_dispatch_request()</code></pre><p>进入full_dispatch_request</p>
+<pre><code>try:
+    request_started.send(self)
+    rv = self.preprocess_request()
+    if rv is None:
+        rv = self.dispatch_request()</code></pre><p>再进入preprocess_request</p>
+<pre><code>bp = _request_ctx_stack.top.request.blueprint
+
+funcs = self.url_value_preprocessors.get(None, ())
+if bp is not None and bp in self.url_value_preprocessors:
+    funcs = chain(funcs, self.url_value_preprocessors[bp])
+for func in funcs:
+    func(request.endpoint, request.view_args)
+
+funcs = self.before_request_funcs.get(None, ())
+if bp is not None and bp in self.before_request_funcs:
+    funcs = chain(funcs, self.before_request_funcs[bp])
+for func in funcs:
+    rv = func()
+    if rv is not None:
+        return rv</code></pre><p>看到后半部分，实际上就是把刚刚字典（before_request_funcs）中的的函数遍历出来执行。如果存在返回值，则直接返回。</p>
+<p>所有如果当前的before_request函数存在并且返回了值，则之后的函数before_request函数后不会被执行，并且视图函数也不会执行，可见调用before_request的源码（前文已提到）</p>
+<pre><code>rv = self.preprocess_request()
+# 若不存在返回值， 才执行视图函数 
+if rv is None:
+    rv = self.dispatch_request()
+# 否则处理错误
+except Exception as e:
+    rv = self.handle_user_exception(e)
+
+# 执行后处理 生成最终的response
+return self.finalize_request(rv)</code></pre><p>再看一下finalize_request</p>
+<pre><code>def finalize_request(self, rv, from_error_handler=False):
+&apos;&apos;&apos;
+把视图函数返回值转换为响应，然后调用后处理函数
+&apos;&apos;&apos;
+    response = self.make_response(rv)   # 生成响应   
+    try:
+        response = self.process_response(response)  # 响应预处理
+        request_finished.send(self, response=response)  # 发送信号
+    except Exception:
+        if not from_error_handler:
+            raise
+        self.logger.exception(
+            &quot;Request finalizing failed with an error while handling an error&quot;
+        )
+    return response</code></pre><p>所以总结流程就是：</p>
+<ol>
+<li>preprocess_request函数执行预处理（例before_request）</li>
+<li>若相关预处理函数出现返回值，提前结束</li>
+<li>若正常执行完所有预处理函数，无返回值</li>
+<li>调用dispatch_request，执行视图函数，将结果封装成rv</li>
+<li>将视图函数生成的返回值rv传递给finalize_request，生成响应对象并且执行后处理</li>
+</ol>
+<h3 id="整理flask请求进入的逻辑"><a href="#整理flask请求进入的逻辑" class="headerlink" title="整理flask请求进入的逻辑"></a>整理flask请求进入的逻辑</h3><pre><code>wsgi ( run_simple函数等待请求到来)
+        ↓
+调用flask的 __call__ ( 由于run_simple的self参数)
+        ↓
+__call__ 返回调用 wsgi_app()    
+        →           ctx = self.request_context(environ) 把请求相关信息传入初始化得一个ctx对象(请求上下文)    
+            ctx.push() 将上下文对象入栈(localStack) → Local存储(维护__storage__ = {122:{stack:[ctx,]}})
+
+        ↓
+视图函数从localStack(再从local)中取出上下文进行操作</code></pre><p><img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3490576137,4161798228&fm=26&gp=0.jpg" alt="image"></p>
+<h3 id="关于Local"><a href="#关于Local" class="headerlink" title="关于Local"></a>关于Local</h3><p>通过上述关系，可知local是作为一个动态的存储仓库。通过线程/进程id设置其运行环境（上下文）。</p>
+<p>进入Local()类中 【local.py】</p>
+<pre><code>class Local(object):
+    __slots__ = (&quot;__storage__&quot;, &quot;__ident_func__&quot;)
+
+    def __init__(self):
+        object.__setattr__(self, &quot;__storage__&quot;, {})
+        object.__setattr__(self, &quot;__ident_func__&quot;, get_ident)
+
+    def __getattr__(self, name):
+        try:
+            return self.__storage__[self.__ident_func__()][name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        ident = self.__ident_func__()
+        storage = self.__storage__
+        try:
+            storage[ident][name] = value
+        except KeyError:
+            storage[ident] = {name: value}</code></pre><p>可以看到init函数中 调用了object类的setattr。但实际上本类中也存在，甚至可以不使用setattr，直接用赋值语句 <code>__storage__</code> = {}也可。那为什么要调用父类的setattr呢。</p>
+<pre><code>回到Local的作用：动态的存储运行环境。
+Local采用__storage__作为仓库存储
+那么面临两个问题：
+1. 初始化__storage__
+2. 动态赋值（格式为__storage__ :{122:{stack:[ctx,]}}）
+
+解决动态赋值问题，即重写赋值函数（赋值语句的实质就是调用__setattr__）
+从源码中可以看到Local类重写了__setattr__函数，实现了所需的要求
+
+那么此时该如何初始化__storage__呢
+由于我们新重写的setattr函数中调用了storage，但未初始化之前就使用了它，明显错误
+
+于是使用object的setattr函数来初始化storage，就完美的解决了以上问题。</code></pre><h3 id="关于LocalStack"><a href="#关于LocalStack" class="headerlink" title="关于LocalStack"></a>关于LocalStack</h3><p>注：在local中 <code>__storage__</code>的实质是字典，它的val也是字典(不同进程线程的存储空间)，val的key名为stack（源码规定）， val的val是列表(用栈实现)（用于管理上下文）</p>
+<p>在单次请求中，我们真正要使用的是当前环境下的上下文，所以如果只依靠Local：</p>
+<pre><code>obj = Local()
+obj.stack = []
+obj.stack.append(上下文环境)</code></pre><p>显然不易于维护、可扩展性差</p>
+<p>于是使用LocalStack作为代理。查看源码LocalStack()类 （<code>local.py</code>）</p>
+<pre><code>class LocalStack(object):
+    def __init__(self):
+        self._local = Local()
+
+    def push(self, obj):
+        &quot;&quot;&quot;Pushes a new item to the stack&quot;&quot;&quot;
+        rv = getattr(self._local, &quot;stack&quot;, None)
+        if rv is None:
+            self._local.stack = rv = []
+        rv.append(obj)
+        return rv
+
+    def pop(self):
+        &quot;&quot;&quot;Removes the topmost item from the stack, will return the
+        old value or `None` if the stack was already empty.
+        &quot;&quot;&quot;
+        stack = getattr(self._local, &quot;stack&quot;, None)
+        if stack is None:
+            return None
+        elif len(stack) == 1:
+            release_local(self._local)
+            return stack[-1]
+        else:
+            return stack.pop()
+
+    @property
+    def top(self):
+        try:
+            return self._local.stack[-1]
+        except (AttributeError, IndexError):
+            return None</code></pre><p>由源码可见</p>
+<ol>
+<li>LocalStack在init中创建了一个Local对象，此时storage是一个空字典</li>
+<li>当调用push时，即传入线程或进程对象时，先判断是否已存在，否则新创建一个空间（列表，作为栈），入栈</li>
+<li>当调用top时，返回栈顶元素</li>
+<li>调用pop时若栈中只剩一个元素，则取出后删除该栈空间，否则pop栈顶元素</li>
+</ol>
+<h4 id="在上下文之前"><a href="#在上下文之前" class="headerlink" title="在上下文之前"></a>在上下文之前</h4><p>在解释上下文之前，先看看上下文和以上的栈有什么联系</p>
+<p>通过以上实现的栈，我们做出以下假设，用上下文存储当前请求的环境(包括request信息、session等)</p>
+<pre><code># 请求上下文
+class RequestContext(object):
+    def __init__(self):
+        self.request = &quot;xx&quot;
+        self.session = &quot;oo&quot;
+
+# 初始化一个存储栈空间
+xxx = LocalStack()
+
+# 当请求进入时，初始化一个请求上下文、封装了当前环境
+ctx = RequestContext()
+
+# 将该请求上下文入栈
+xxx.push(ctx)
+
+# 当需要使用相关资源时，取当前栈顶元素，即可操作相关数据
+obj = xxx.top()
+obj.request
+obj.session</code></pre><p>具体源码下章解析</p>
+<h1 id="本地上下文"><a href="#本地上下文" class="headerlink" title="本地上下文"></a>本地上下文</h1><p>以上所谈及的上下文究竟是什么呢？</p>
+<p>在多线程环境下，要想让所有视图函数都获取请求对象。</p>
+<ul>
+<li>最直接的方法就是在调用视图函数时将所有需要的数据作为参数传递进去，但这样一来程序逻辑就变得冗余不易于维护。</li>
+<li>另一种方法是将这些数据设为全局变量，但是这样必然会在不同的线程中出现混乱（非线程安全）。<br>本地线程（thread locals） 的出现解决了这些问题。</li>
+</ul>
+<p>本地线程就是一个全局对象，使用一种<strong>特定线程且线程安全</strong>的方式来存储和获取数据。也就是说，<strong>同一个变量在不同线程内拥有各自的值，互不干扰。</strong></p>
+<p>实现原理其实很简单，就是根据线程的ID来存取数据。</p>
+<blockquote>
+<p>Flask没有使用标准库的threading.local()，而是使用了Werkzeug自己实现的本地线程对象werkzeug.local.Local()，后者增加了对Greenlet（以C扩展形式接入python的轻量级协程）的优先支持。</p>
+</blockquote>
+<p>Flask使用本地线程来让上下文代理对象全局可访问，比如：</p>
+<ul>
+<li>request</li>
+<li>session</li>
+<li>current_app</li>
+<li>g</li>
+</ul>
+<p>这些对象被称为本地上下文对象（context locals）。</p>
+<p>所以，在不基于线程、greenlet或单进程实现的并发服务器上，这些代理对象将无法正常工作，但仅有少部分服务器不支持。</p>
+<blockquote>
+<p>Flask的设计初衷是为了让传统Web程序开发更加简单和迅速，二不是用来开发大型程序或异步服务器的。但Flask 的可扩展性却提供了无限的可能性，除了使用扩展，还可以子类化Flask类或为程序添加中间件。</p>
+</blockquote>
+<p>应用上下文、请求上下文都是对象，是对一系列flask对象的封装，并且提供相关的接口方法。</p>
+<ul>
+<li>请求上下文： request session</li>
+<li>应用上下文： app      g</li>
+<li>flask中上下文相关的代码存放在 <code>ctx.py</code></li>
+</ul>
+<h2 id="请求上下文"><a href="#请求上下文" class="headerlink" title="请求上下文"></a>请求上下文</h2><p>请求上下文最主要的是提供对Request请求对象的封装。</p>
+<pre><code>RequestContext(object)  // 请求上下文
+    - __init__
+    - push
+    - pop
+    - __enter__
+    - __exit__</code></pre><p>先看源码中init函数的作用</p>
+<pre><code>def __init__(self, app, environ, request=None, session=None):
+    self.app = app
+    if request is None:
+        request = app.request_class(environ)
+    self.request = request
+    self.url_adapter = None
+    try:
+        self.url_adapter = app.create_url_adapter(self.request)
+    except HTTPException as e:
+        self.request.routing_exception = e
+    self.flashes = None
+    self.session = session</code></pre><p>可以看到就是对当前请求相关数据的初始化，如 当前app对象、request、session、flashes等，符合上章所提到的上下文和栈的关系作用。</p>
+<h3 id="认识"><a href="#认识" class="headerlink" title="认识"></a>认识</h3><p>请求到来时：</p>
+<pre><code># self是app对象，environ是请求相关的原始数据(根据WSGI规定)
+ctx = RequestContext(self, environ)
+ctx.request = Request(environ)
+ctx.session = None
+
+# 不同的线程在内部分别持有不同的资源
+{
+    1232：{ctx: ctx对象}
+    1231：{ctx: ctx对象}
+    2141：{ctx: ctx对象}
+    1235：{ctx: ctx对象}
+}</code></pre><p>视图函数：</p>
+<pre><code>from flask import request,session
+# falsk 自动的识别当前线程，找到对应的ctx里的request、session</code></pre><p>请求结束：</p>
+<pre><code>根据当前线程的唯一标记，将数据资源移除</code></pre><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>flask利用local()为线程或协程开辟资源空间，并用stack【栈】存储维护，内部再使用偏函数【functools.partial(func1, 10)】拆分各属性值。</p>
+<pre><code>    app.run()
+0. wsgi(处理请求，准备调用__call__)
+1. app.__call__(准备调用wsgi_app)
+2. app.wsgi_app(准备实例化RequestContext)
+3. ctx = RequestContext(session, request)
+    - 请求相关+空session 封装到RequestContext（ctx） 
+4. ctx.push()
+    - 将ctx交给LocalStack对象
+5. LocalStack,把ctx对象添加到local中
+    - LocalStack相当于将单个线程或协程的数据资源分割开来，并作为栈进行维护
+6. Local __storage__ = {
+    1231: {stack: [ctx(request, session), ]}
+                        }
+    - local的结构。存储了多个线程或协程的资源数据
+7. session存储
+    根据请求中的cookie提取名为sessionid对应的值，对cookie加密+反序列化，再赋值给ctx里的session
+8. 视图函数
+    - 利用flask已经封装好的库，调用session或request的相关资源
+9. 操作结束后
+    把session中的数据再次写入cookie中，将ctx删除
+10. 结果返回给用户浏览器
+11. 断开socket连接</code></pre><h3 id="request哪来的"><a href="#request哪来的" class="headerlink" title="request哪来的"></a>request哪来的</h3><ol>
+<li>首先当请求进入时，<code>__call__</code>调用wsgi_app</li>
+<li>在wsgi_app中初始化了一个请求上下文 ctx = self.request_context(environ)</li>
+<li>可见是将environ作为参数传入，而在WSGI中规定 environ即保存着请求相关的数据</li>
+<li>进入request_context() 函数 发现只有一行代码 return RequestContext(self, environ)</li>
+<li>进入RequestContext类 看到init函数中 request = app.request_class(environ)</li>
+<li>通过以上 封装了一个request对象.提供我们可以使用 request.method request.args等操作</li>
+</ol>
+<h3 id="session相关原理"><a href="#session相关原理" class="headerlink" title="session相关原理"></a>session相关原理</h3><p>通过源码可以看到session的继承中，存在dict。则session具备dict的所有操作。</p>
+<pre><code>class SecureCookieSession(CallbackDict, SessionMixin):
+                ↓
+class CallbackDict(UpdateDictMixin, dict):</code></pre><ol>
+<li>session数据保存到redis</li>
+<li>生成一个随机字符串</li>
+<li>返回一个随机字符串给用户，并作为key</li>
+<li>客户端再访问时返回该随机字符串</li>
+</ol>
+<h4 id="flash"><a href="#flash" class="headerlink" title="flash"></a>flash</h4><p>flask中存在消息闪现机制，通过flash()源码（helpers.py）可以看到，本质上是利用session实现的</p>
+<pre><code># category表示消息的类别，可以按类别存入，按类别弹出
+def flash(message, category=&quot;message&quot;):
+    flashes = session.get(&quot;_flashes&quot;, [])
+    flashes.append((category, message))
+    session[&quot;_flashes&quot;] = flashes
+    message_flashed.send(
+        current_app._get_current_object(), message=message, category=category
+    )</code></pre><p>弹出flash信息函数</p>
+<pre><code>def get_flashed_messages(with_categories=False, category_filter=()):
+    flashes = _request_ctx_stack.top.flashes
+    if flashes is None:
+        _request_ctx_stack.top.flashes = flashes = (
+            session.pop(&quot;_flashes&quot;) if &quot;_flashes&quot; in session else []
+        )
+    if category_filter:
+        flashes = list(filter(lambda f: f[0] in category_filter, flashes))
+    if not with_categories:
+        return [x[1] for x in flashes]
+    return flashes</code></pre><p>则最终实现的效果是 flash() 存入信息，get_flashed_messages()只能对应的弹出一次。</p>
+<h2 id="应用上下文"><a href="#应用上下文" class="headerlink" title="应用上下文"></a>应用上下文</h2><p>应用上下文最主要的就是提供对核心对象flask的封装。</p>
+<p>源代码中类的主要结构为：</p>
+<pre><code>AppContext(object)      // 应用上下文
+    - push
+    - pop
+    - __enter__
+    - __exit__</code></pre><h3 id="g"><a href="#g" class="headerlink" title="g"></a>g</h3><p>每个请求进入时，都会创建一个g，一次完整请求为一个生命周期。</p>
+<p>当多线程进入时，由于g的唯一标识为线程（Local中的<code>__storage__</code>），所以资源互不影响。可以使用g为每次请求设置一个值。</p>
+<pre><code># 例：
+@app.before_request
+def x1():
+    g.x1 = 123
+
+@app.route(&apos;/index&apos;)
+def index():
+    print(g.x1)
+    return &quot;index&quot;</code></pre><h3 id="current-app"><a href="#current-app" class="headerlink" title="current_app"></a>current_app</h3><h2 id="上下文与栈"><a href="#上下文与栈" class="headerlink" title="上下文与栈"></a>上下文与栈</h2><h3 id="栈到底是怎么工作的"><a href="#栈到底是怎么工作的" class="headerlink" title="栈到底是怎么工作的"></a>栈到底是怎么工作的</h3><p><img src="https://images2018.cnblogs.com/blog/1426593/201807/1426593-20180714110358443-1991593952.png" alt="image"><br>主要通过栈实现，即当一个请求进入时：</p>
+<ol>
+<li>实例化一个requestcontext，封装了本次请求的相关信息（在Request中）</li>
+<li>在请求上下文入栈之前，先检查应用上下文栈（源码可见栈名为：_app_ctx_stack）是否为空，为空则将当前app push()入栈</li>
+<li>将请求上下文push()入栈（源码可见栈名为：_request_ctx_stack）</li>
+</ol>
+<pre><code># RequestContext类中
+# 可以看到先判断app_ctx是否存在，然后再push入栈request_ctx
+app_ctx = _app_ctx_stack.top
+if app_ctx is None or app_ctx.app != self.app:
+    # app_context 用于创建app_ctx对象
+    app_ctx = self.app.app_context()
+    app_ctx.push()
+    self._implicit_app_ctx_stack.append(app_ctx)
+else:
+    self._implicit_app_ctx_stack.append(None)
+
+_request_ctx_stack.push(self)</code></pre><p>由于以上判断，所以我们在视图函数中使用current_app时，由于有请求上下文，所以不需要手动将应用上下文app_ctx入栈。如果在视图函数外，没有请求发生时，使用current_app则需要手动入栈</p>
+<pre><code>app_ctx = app.app_context()
+app_ctx.push()
+# 可使用current_app
+app_ctx.pop()</code></pre><p>何时会用到？</p>
+<pre><code>在实际生产中，current_app对象一般都是至与视图函数中使用
+由于有正在的请求到来，所以不需要手动入栈。
+但是在代码测试阶段，在进行单元测试时，或离线应用（不使用postman等工具发生完整请求）
+没有实际的请求到来，又需要对代码进行测试
+则需要手动将app_ctx入栈</code></pre><h4 id="with优化出入栈"><a href="#with优化出入栈" class="headerlink" title="with优化出入栈"></a>with优化出入栈</h4><pre><code># with优化 不需要手动push pop
+with app.app_context():     
+    # __enter__(连接) 
+    a = current_app     
+    d = current_app.config[&apos;DEBUG&apos;]
+    #  __exit__(释放连接【资源】)
+    # (__exit__内部实现了异常处理，若成功处理了返回True，若没有成功处理，返回False还会向外部抛出异常)
+# 出了with环境 app对象被pop()出栈 current_app 就找不到目标了</code></pre><p>​<br>​    # with可以对实现了上下文协议的对象使用<br>​    # 上下文管理器(app context)<br>​    # 实现了<strong>enter</strong>(连接)  <strong>exit</strong>(释放连接【资源】)就是上下文管理器<br>​    # 上下文表达式必须要返回一个上下文管理器</p>
+<p>​<br>​    # 此时a是<strong>enter</strong> 的返回值<br>​    with app.app_context() as a:<br>​        pass</p>
+<p>​<br>​<br>​    # 可以自己实现上下文管理器，必须实现<strong>enter</strong> <strong>exit</strong>方法<br>​    class MyResource:<br>​<br>​        def <strong>enter</strong>(self):<br>​            print(‘connect to resource’)<br>​            # 将管理器返回再利用管理器进行相关操作<br>​            return self<br>​<br>​        def <strong>exit</strong>(self,exc_type, exc_value, tb):<br>​            print(‘close connection’)<br>​            return True/False<br>​            # 返回True 表明此若产生异常内部进行处理，外部不会接收到异常<br>​<br>        def query(self):<br>            print(‘doing’)</p>
+<pre><code>    with MyResource() as r:
+        r.query()
+
+# 也可以通过装饰器,省略__enter__ __exit__ (不推荐)
+from contextlib import contextmanager
+class MyResource:
+    def query(self):
+        print(&apos;doing&apos;)
+
+@contextmanager
+def make_myresource():
+    print(&apos;connect to resource&apos;)
+    # yield做返回，使用结束后再回到函数关闭连接
+    yield MyResource()
+    print(&apos;close connection&apos;)
+
+with MyResource() as r:
+        r.query()
+
+# 但是更好的做法是将本身不是上下文管理器的类，变为上下文管理器
+# 例：输入书名 with中自动添加 《》 
+#     操作数据库 with中自动连接、回滚、断开</code></pre><h4 id="源码中的体现"><a href="#源码中的体现" class="headerlink" title="源码中的体现"></a>源码中的体现</h4><p>从源码中可以看到无论是应用上下文还是请求上下文，都具有以下两个函数</p>
+<pre><code>def __enter__(self):
+    self.push()
+    return self
+
+def __exit__(self, exc_type, exc_value, tb):
+    # do not pop the request stack if we are in debug mode and an
+    # exception happened.  This will allow the debugger to still
+    # access the request object in the interactive shell.  Furthermore
+    # the context can be force kept alive for the test client.
+    # See flask.testing for how this works.
+    self.auto_pop(exc_value)
+
+    if BROKEN_PYPY_CTXMGR_EXIT and exc_type is not None:
+        reraise(exc_type, exc_value, tb)</code></pre><p>即在进入时将上下文入栈，使用完毕后自动pop出栈</p>
+<h3 id="栈中的元素"><a href="#栈中的元素" class="headerlink" title="栈中的元素"></a>栈中的元素</h3><p>从源码中可以看到，push()的是上下文对象，但是我们真正使用的并非是上下文，而是current_app\request 等对象</p>
+<p>源码中</p>
+<pre><code>current_app = LocalProxy(_find_app)</code></pre><p>再看_find_app</p>
+<pre><code>def _find_app():
+    top = _app_ctx_stack.top
+    if top is None:
+        raise RuntimeError(_app_ctx_err_msg)
+    return top.app</code></pre><p>注意到current_app是取app_ctx_stack的栈顶元素的app对象</p>
+<p>同理request、g、session</p>
+<pre><code>def _lookup_req_object(name):
+    top = _request_ctx_stack.top
+    if top is None:
+        raise RuntimeError(_request_ctx_err_msg)
+    return getattr(top, name)</code></pre><h1 id="LocalProxy代理"><a href="#LocalProxy代理" class="headerlink" title="LocalProxy代理"></a>LocalProxy代理</h1><h2 id="代理有什么用？"><a href="#代理有什么用？" class="headerlink" title="代理有什么用？"></a>代理有什么用？</h2><p>所有的数据都存储在Local中，如果直接对数据进行存取，需要建立多个类进行对数据的存取。如request类、session类、g类、current_app类。</p>
+<p>但是由于以上类的功能相同，可以抽象出来，使用一个代理类，完成所需功能。</p>
+<h2 id="知识预备"><a href="#知识预备" class="headerlink" title="知识预备"></a>知识预备</h2><pre><code># 偏函数
+import functools
+
+def index(a1, a2)
+    return a1 + a2
+
+new_func = functools.partial(index, 666)
+# 帮助自动传递参数
+new_func(1)     // 667</code></pre><h3 id="源码体现"><a href="#源码体现" class="headerlink" title="源码体现"></a>源码体现</h3><p>在我们实际运用中，并不是直接去操作上下文。而是使用例如：current_app\request\session\g等 通过源码看到</p>
+<pre><code>_request_ctx_stack = LocalStack()
+_app_ctx_stack = LocalStack()
+current_app = LocalProxy(_find_app)
+request = LocalProxy(partial(_lookup_req_object, &quot;request&quot;))
+session = LocalProxy(partial(_lookup_req_object, &quot;session&quot;))
+g = LocalProxy(partial(_lookup_app_object, &quot;g&quot;))</code></pre><p>我们先进入LocalProxy类，看到init函数</p>
+<pre><code>def __init__(self, local, name=None):
+    object.__setattr__(self, &quot;_LocalProxy__local&quot;, local)
+    object.__setattr__(self, &quot;__name__&quot;, name)
+    if callable(local) and not hasattr(local, &quot;__release_local__&quot;):
+        # &quot;local&quot; is a callable that is not an instance of Local or
+        # LocalManager: mark it as a wrapped function.
+        object.__setattr__(self, &quot;__wrapped__&quot;, local)</code></pre><p>即为该对象设置值，而我们在实例化的时候，传递的参数是一个偏函数</p>
+<p>那么当我们创建完代理对象后，考虑我们是怎样使用这些代理的： request.method request.args等，则实际上会调用对象的getattr。进入源码</p>
+<pre><code>def __getattr__(self, name):
+    if name == &quot;__members__&quot;:
+        return dir(self._get_current_object())
+    return getattr(self._get_current_object(), name)</code></pre><p>进入_get_current_object函数</p>
+<pre><code>def _get_current_object(self):
+    &quot;&quot;&quot;Return the current object.  This is useful if you want the real
+    object behind the proxy at a time for performance reasons or because
+    you want to pass the object into a different context.
+    &quot;&quot;&quot;
+    if not hasattr(self.__local, &quot;__release_local__&quot;):
+        return self.__local()
+    try:
+        return getattr(self.__local, self.__name__)
+    except AttributeError:
+        raise RuntimeError(&quot;no object bound to %s&quot; % self.__name__)</code></pre><p>而local()实际上就是我们传递进来的偏函数（init()初始化的结果）</p>
+<p>回头看一下传递进来的偏函数，看到源码中的_lookup_req_object</p>
+<pre><code>def _lookup_req_object(name):
+    top = _request_ctx_stack.top
+    if top is None:
+        raise RuntimeError(_request_ctx_err_msg)
+    return getattr(top, name)</code></pre><p>即取出栈顶的元素(上下文)，再通过getattr获取到相关的内容。而erquest、session等，在前面也已经看到，是在上下文初始化时就创建的。所以该函数最终就是根据传递进来的参数(request, session, g, current_app)，进入到local栈中，top拿到栈顶的上下文，然后在上下文中取出所需的资源。</p>
+<h1 id="三种程序状态"><a href="#三种程序状态" class="headerlink" title="三种程序状态"></a>三种程序状态</h1><p>Flask提供的四个本地上下文对象分别在特定的程序状态下绑定实际的对象。如果我们在访问或使用它们时还没有绑定，就会看到经典的RuntimeError异常。</p>
+<p>Flask中存在三种状态：</p>
+<ul>
+<li>程序设置状态</li>
+<li>程序运行状态</li>
+<li>请求运行状态</li>
+</ul>
+<h2 id="程序设置状态"><a href="#程序设置状态" class="headerlink" title="程序设置状态"></a>程序设置状态</h2><p>当Flask类被实例化，也就是创建程序实例app后，就进入程序设置状态。这是所有的全局对象都没有被绑定：</p>
+<pre><code>app = Flask(__name__)</code></pre><h2 id="程序运行状态"><a href="#程序运行状态" class="headerlink" title="程序运行状态"></a>程序运行状态</h2><p>当Flask程序启动，但是还没有请求进入时，Flask进入了程序运行状态。<br>在这种状态下，程序上下文对象current_app和g都绑定了各自的对象。</p>
+<p>使用flask shell命令打开的python shell默认就是这种状态，我们也在普通的Python shell中通过手动推送程序上下文来模拟：</p>
+<pre><code>app = Flask(__name__)
+ctx = app.app_context()
+ctx.push()
+# current_app g     /Flask flask.g
+# requst session  /unbound</code></pre><p>以上我们手动使用app_context() 创建了程序上下文，然后调用push() 方法把它推送到程序上下文堆栈里。</p>
+<p>默认情况下，当请求进入的时候，程序上下文会随着请求上下文一起被自动激活。但是在没有请求进入的场景，比较离线脚本、测试或者进行交互调试的时候，手动推送程序上下文以进入程序运行状态会非常方便。</p>
+<h2 id="请求运行状态"><a href="#请求运行状态" class="headerlink" title="请求运行状态"></a>请求运行状态</h2><p>当请求进入的时候，或是使用test_request_context()方法、test_client()方法时，Flask会进入请求运行状态。因为当请求上下文被推送时，程序上下文会被自动推送，所以在这个状态下4个全局对象都会被绑定。我们可以通过手动推送请求上下文模拟：</p>
+<pre><code>app = Flask(__name__)
+ctx = app.test_request_context()
+ctx.push()
+# current_app, g, request, session
+# Flask flask.g Request NullSession</code></pre><p>这也是为什么可以直接在视图函数和相应的回调函数里直接使用这些上下文对象，而不用推送上下文（Flask在处理请求时会自动推送请求上下文和程序上下文）</p>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li>《Flask Web 开发实战》</li>
+<li>各类视频资料…</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flask/" rel="tag"># Flask</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/" rel="next" title="Flask部署知识（Nginx+uWSGI+HTTPS）">
+                <i class="fa fa-chevron-left"></i> Flask部署知识（Nginx+uWSGI+HTTPS）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/12/网络编程基础/" rel="prev" title="网络编程基础">
+                网络编程基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/header.jpg" alt="CAO RUNJIA">
+            
+              <p class="site-author-name" itemprop="name">CAO RUNJIA</p>
+              <p class="site-description motion-element" itemprop="description">PYTHON</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Sssmeb" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/weixin_41855723" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/8f4d80000566" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#两个核心依赖"><span class="nav-number">1.</span> <span class="nav-text">两个核心依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jinja2"><span class="nav-number">1.1.</span> <span class="nav-text">Jinja2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Werkzeug"><span class="nav-number">1.2.</span> <span class="nav-text">Werkzeug</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WSGI程序"><span class="nav-number">1.2.1.</span> <span class="nav-text">WSGI程序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#werkzeug中如何实现Web程序"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">werkzeug中如何实现Web程序</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由是怎么设定的？"><span class="nav-number">2.</span> <span class="nav-text">路由是怎么设定的？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Werkzeug怎么实现路由系统"><span class="nav-number">2.1.</span> <span class="nav-text">Werkzeug怎么实现路由系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flask的路由系统"><span class="nav-number">2.2.</span> <span class="nav-text">Flask的路由系统</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#导入config配置参数"><span class="nav-number">3.</span> <span class="nav-text">导入config配置参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用类导入配置的作用"><span class="nav-number">3.1.</span> <span class="nav-text">用类导入配置的作用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flask如何处理请求"><span class="nav-number">4.</span> <span class="nav-text">Flask如何处理请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#app程序对象"><span class="nav-number">4.1.</span> <span class="nav-text">app程序对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动app-run"><span class="nav-number">4.2.</span> <span class="nav-text">启动app.run()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#before-request-after-request"><span class="nav-number">4.2.1.</span> <span class="nav-text">before_request\after_request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整理flask请求进入的逻辑"><span class="nav-number">4.2.2.</span> <span class="nav-text">整理flask请求进入的逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于Local"><span class="nav-number">4.2.3.</span> <span class="nav-text">关于Local</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于LocalStack"><span class="nav-number">4.2.4.</span> <span class="nav-text">关于LocalStack</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在上下文之前"><span class="nav-number">4.2.4.1.</span> <span class="nav-text">在上下文之前</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地上下文"><span class="nav-number">5.</span> <span class="nav-text">本地上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求上下文"><span class="nav-number">5.1.</span> <span class="nav-text">请求上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#认识"><span class="nav-number">5.1.1.</span> <span class="nav-text">认识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">5.1.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#request哪来的"><span class="nav-number">5.1.3.</span> <span class="nav-text">request哪来的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session相关原理"><span class="nav-number">5.1.4.</span> <span class="nav-text">session相关原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#flash"><span class="nav-number">5.1.4.1.</span> <span class="nav-text">flash</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用上下文"><span class="nav-number">5.2.</span> <span class="nav-text">应用上下文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#g"><span class="nav-number">5.2.1.</span> <span class="nav-text">g</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#current-app"><span class="nav-number">5.2.2.</span> <span class="nav-text">current_app</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上下文与栈"><span class="nav-number">5.3.</span> <span class="nav-text">上下文与栈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#栈到底是怎么工作的"><span class="nav-number">5.3.1.</span> <span class="nav-text">栈到底是怎么工作的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#with优化出入栈"><span class="nav-number">5.3.1.1.</span> <span class="nav-text">with优化出入栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码中的体现"><span class="nav-number">5.3.1.2.</span> <span class="nav-text">源码中的体现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#栈中的元素"><span class="nav-number">5.3.2.</span> <span class="nav-text">栈中的元素</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LocalProxy代理"><span class="nav-number">6.</span> <span class="nav-text">LocalProxy代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代理有什么用？"><span class="nav-number">6.1.</span> <span class="nav-text">代理有什么用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#知识预备"><span class="nav-number">6.2.</span> <span class="nav-text">知识预备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#源码体现"><span class="nav-number">6.2.1.</span> <span class="nav-text">源码体现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三种程序状态"><span class="nav-number">7.</span> <span class="nav-text">三种程序状态</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序设置状态"><span class="nav-number">7.1.</span> <span class="nav-text">程序设置状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#程序运行状态"><span class="nav-number">7.2.</span> <span class="nav-text">程序运行状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求运行状态"><span class="nav-number">7.3.</span> <span class="nav-text">请求运行状态</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">8.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CAO RUNJIA</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

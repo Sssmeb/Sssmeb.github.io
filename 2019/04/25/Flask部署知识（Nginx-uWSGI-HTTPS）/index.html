@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Flask,uwsgi,Nginx,Python,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="CRJ" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="名词解析WSGI封装了处理HTTP响应、TCP连接等操作的接口。用户不需要自己实现接受HTTP请求、解析HTTP请求、发送HTTP响应等操作，不需要专注于HTTP规范等，可以专心编写Web业务。 werkzeugflask自带WSGI工具包，可以搭建WSGI服务。但只用于开发，实际生产需要用更专业高效的Web服务器。 uWSGIWeb服务器。它实现了WSGI协议、uwsgi、http等协议，是一个">
+<meta name="keywords" content="Flask,uwsgi,Nginx,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask部署知识（Nginx+uWSGI+HTTPS）">
+<meta property="og:url" content="https://sssmeb.github.io/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/index.html">
+<meta property="og:site_name" content="CRJ">
+<meta property="og:description" content="名词解析WSGI封装了处理HTTP响应、TCP连接等操作的接口。用户不需要自己实现接受HTTP请求、解析HTTP请求、发送HTTP响应等操作，不需要专注于HTTP规范等，可以专心编写Web业务。 werkzeugflask自带WSGI工具包，可以搭建WSGI服务。但只用于开发，实际生产需要用更专业高效的Web服务器。 uWSGIWeb服务器。它实现了WSGI协议、uwsgi、http等协议，是一个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3120119-9863875b84d6ebf4.jpeg?imageMogr2/auto-orient/">
+<meta property="og:updated_time" content="2019-08-15T08:52:07.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flask部署知识（Nginx+uWSGI+HTTPS）">
+<meta name="twitter:description" content="名词解析WSGI封装了处理HTTP响应、TCP连接等操作的接口。用户不需要自己实现接受HTTP请求、解析HTTP请求、发送HTTP响应等操作，不需要专注于HTTP规范等，可以专心编写Web业务。 werkzeugflask自带WSGI工具包，可以搭建WSGI服务。但只用于开发，实际生产需要用更专业高效的Web服务器。 uWSGIWeb服务器。它实现了WSGI协议、uwsgi、http等协议，是一个">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/3120119-9863875b84d6ebf4.jpeg?imageMogr2/auto-orient/">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sssmeb.github.io/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/">
+
+
+
+
+
+  <title>Flask部署知识（Nginx+uWSGI+HTTPS） | CRJ</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">CRJ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home                          //首页"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive          //归档"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th           //分类"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags                     //标签"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user                   //关于"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Flask部署知识（Nginx+uWSGI+HTTPS）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-25T16:26:26+08:00">
+                2019-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="名词解析"><a href="#名词解析" class="headerlink" title="名词解析"></a>名词解析</h3><h5 id="WSGI"><a href="#WSGI" class="headerlink" title="WSGI"></a>WSGI</h5><p>封装了处理HTTP响应、TCP连接等操作的接口。用户不需要自己实现接受HTTP请求、解析HTTP请求、发送HTTP响应等操作，不需要专注于HTTP规范等，可以专心编写Web业务。</p>
+<h5 id="werkzeug"><a href="#werkzeug" class="headerlink" title="werkzeug"></a>werkzeug</h5><p>flask自带WSGI工具包，可以搭建WSGI服务。但只用于开发，实际生产需要用更专业高效的Web服务器。</p>
+<h5 id="uWSGI"><a href="#uWSGI" class="headerlink" title="uWSGI"></a>uWSGI</h5><p>Web服务器。它实现了WSGI协议、uwsgi、http等协议，是一个全站式的托管服务，支持多种编程语言。</p>
+<h5 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h5><p>高效的Web服务器和反向代理服务器，可以用于负载均衡。也支持uWSGI的uwsgi协议，所以可以将Nginx与uWSGI结合起来。</p>
+<ul>
+<li>相较于Apache，Nginx支持高并发，部署简单，内存消耗少。但是Apache发展更久，模块更丰富，社区更大。</li>
+</ul>
+<p>Nginx 以其高性能、稳定性、丰富的功能、简单的配置、低资源消耗而闻名。</p>
+<p>Nginx 是一个可以为你的 Web 应用处理 HTTP 请求的服务器。对于典型的 Web 应用，Nginx 可以配置为 HTTP 请求进行以下操作：</p>
+<ul>
+<li>将请求 反向代理 至上游服务器（例如 Gunicorn、uWsgi、Apache 等）。</li>
+<li>为静态资源（Javascript 文件、CSS 文件、图像、文档、静态 HTML 文件）提供服务。</li>
+</ul>
+<h6 id="uWSGI与nginx的区别"><a href="#uWSGI与nginx的区别" class="headerlink" title="uWSGI与nginx的区别"></a>uWSGI与nginx的区别</h6><p>uWSGI与Nginx同是Web服务器，但是Nginx对于处理静态文件更有优势、性能更好。表现在Nginx能进行负载均衡、HTTP缓存、高效处理高并发请求等等。所以把这两者结合起来使用，能够使服务器更稳定、高效。</p>
+<p>在我们的模型中：</p>
+<ul>
+<li>nginx是对外的服务器，外部浏览器通过url访问nginx,uwsgi是对内的服务器，主要用来处理动态请求。</li>
+<li>nginx接收到浏览器发送过来的http请求，将包进行解析，分析url， </li>
+</ul>
+<pre><code>a.如果是静态文件请求就直接访问用户给nginx配置的静态文件目录，直接返回用户请求的静态文件， 
+
+b.如果不是静态文件，而是一个动态的请求，那么nginx就将请求转发给uWSGI。
+
+所以抽象出来
+
+    用户 →  nginx   →   uWSGI</code></pre><p>  <img src="https://upload-images.jianshu.io/upload_images/3120119-9863875b84d6ebf4.jpeg?imageMogr2/auto-orient/" alt="image"></p>
+<blockquote>
+<p>图片取自<a href="https://www.jianshu.com/p/85692a94e99b" target="_blank" rel="noopener">https://www.jianshu.com/p/85692a94e99b</a></p>
+</blockquote>
+<h5 id="uwsgi"><a href="#uwsgi" class="headerlink" title="uwsgi"></a>uwsgi</h5><p>uwsgi是一种线路协议而不是通信协议。uwsgi协议是一个uWSGI服务器自有的协议，它用于定义传输信息的类型。</p>
+<h5 id="Flask"><a href="#Flask" class="headerlink" title="Flask"></a>Flask</h5><p>为什么不直接使用Flask内置作为Web服务器</p>
+<ul>
+<li>高并发：flask本身不支持并发，需要uwsgi+flask开启多个worker</li>
+<li>性能：使用这种模式，将解析http协议放到了nginx，由于nginx这样用C/C++高性能实现的服务器，比起Python脚本语言解析HTTP协议，效率要高。</li>
+</ul>
+<hr>
+<h3 id="依赖安装"><a href="#依赖安装" class="headerlink" title="依赖安装"></a>依赖安装</h3><ul>
+<li>python</li>
+<li>nginx</li>
+<li>uwsgi</li>
+<li>gcc（由于uwsgi是用c编写的所以依赖c编译器）</li>
+</ul>
+<p>安装比较简单，不赘述。</p>
+<p>工具主要使用Xshell和Xftp，均有官方免费版。</p>
+<hr>
+<h3 id="部署流程"><a href="#部署流程" class="headerlink" title="部署流程"></a>部署流程</h3><ul>
+<li>开发：windows10 + pycharm + Flask</li>
+<li>服务器：虚拟环境python3.6（conda管理） + centos7</li>
+</ul>
+<h4 id="1、项目文件上传至服务器"><a href="#1、项目文件上传至服务器" class="headerlink" title="1、项目文件上传至服务器"></a>1、项目文件上传至服务器</h4><p>比较简单，提供三种做法</p>
+<ol>
+<li>git管理（推荐）</li>
+<li>Xftp工具上传至服务器</li>
+<li>scp命令（较少用在win和linux之间）</li>
+</ol>
+<pre><code>常用：
+    scp /cloud/data/test.txt root@10.21.156.6:/cloud/data/</code></pre><h4 id="uwsgi-1"><a href="#uwsgi-1" class="headerlink" title="uwsgi"></a>uwsgi</h4><p>如果是简单项目、参数较少或者是测试 可以直接在命令行传递参数，启动项目</p>
+<pre><code>uwsgi --wsgi-file app.py --processes 4 --threads 2</code></pre><p>当然，正常项目都是使用配置文件，可以更方便的修改、管理众多的参数。所以在项目目录下创建一个uwsgi.ini文件进行配置。</p>
+<p>接下来记录一下主要使用到的一些参数以及参数配置时要注意的问题</p>
+<pre><code># 如果是使用虚拟环境运行的，要配置虚拟环境地址    
+home = /ENV</code></pre><p>​<br>​    # 项目根目录<br>​    chdir = /项目地址<br>​    # app所在的启动文件<br>​    wsgi-file = /项目地址/app.py<br>​    # flask特需的参数，指明app对象名称<br>​    callable = hello</p>
+<p>​<br>​<br>​    # 最大进程数，推荐匹配cpu数<br>​    processes = 4<br>​    # 每个进程开启的线程数<br>​    threads = 2<br>​<br>​    # socket方式与nginx连接，此参数需要对应nginx参数。即同步连接通道。<br>​    socket = 127.0.0.1:5001<br>​    # 为socket操作文件赋予权限<br>​    chmod-socket = 666</p>
+<p>​<br>​    # 环境退出时自动清理，包含pid、sock和status文件<br>​    vacuum = true<br>​    # 日志路径<br>​    logto = /tmp/uwsgi/uwsgi.log</p>
+<p>让supervisor管理uwsgi，可以在uwsgi发生意外的情况下，会自动的重启。本次没有使用，先做下记录。</p>
+<h5 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h5><pre><code>uwsgi --ini /etc/uwsgi_config.ini       #初始化uwsgi服务
+uwsgi --stop /etc/uwsgi_config.ini      #停止uwsgi服务
+uwsgi --reload /etc/uwsgi_config.ini    #重新加载uwsgi服务
+
+##重启命令可能无效,请尝试先杀死相关进程然后再重启
+killall -9 nginx                        #kill所有 nginx相关进程
+killall -9 uwsgi                        #kill所有 uwsgi 相关进程</code></pre><h4 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h4><h5 id="nginx常见操作"><a href="#nginx常见操作" class="headerlink" title="nginx常见操作"></a>nginx常见操作</h5><blockquote>
+<p>如果不知道nginx启动文件在哪可以使用 whereis nginx</p>
+</blockquote>
+<pre><code># 启动
+/usr/local/nginx/sbin/nginx
+
+cd /usr/local/nginx/sbin
+
+# 判断配置文件是否正确
+./nginx -t
+
+# 关闭
+./nginx -s quit         # 完成已接受的连接请求，正常停止
+./nginx -s stop         # 直接关闭，快速停止
+# 当然也可以杀死进程
+ps -ef | grep nginx
+kill -quit 进程id
+
+# 当配置文件错乱是 可-c指定该文件作为配置文件
+nginx -c ./nginx.conf
+
+# 平滑重启 不停止nginx的情况下，重新加载配置文件
+./nginx -s reload</code></pre><p>​<br>​    # 当端口重复占用时，可能是nginx服务卡死，可以先杀死，再重启<br>​    # 查看正在监听的端口<br>​    netstat -ntpl<br>​    kill xx</p>
+<h5 id="普通配置"><a href="#普通配置" class="headerlink" title="普通配置"></a>普通配置</h5><pre><code>备份原有的nginx文件（备份是一个良好的习惯，再修改配置文件的时候最好都要备份一下）
+
+cp /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.bak</code></pre><p>Nginx的顶层配置是nginx.conf。Nginx接受多层级的配置文件，这也使得用户可以针对自己的应用进行弹性的配置。</p>
+<hr>
+<p>在Nginx中，由配置块来组织各个配置参数。</p>
+<ul>
+<li>Main – 定义于 nginx.conf（所有不属于配置块的参数均属 Main 块）</li>
+<li>Events – 定义于 nginx.conf</li>
+<li>Http – 定义于 nginx.conf</li>
+<li>Server – 定义于 application_name.conf</li>
+</ul>
+<p>nginx默认安装的配置文件在/etc/nginx/nginx.conf </p>
+<p>以下基础配置（缺省了一些不常用、默认参数）</p>
+<pre><code># Nginx服务器的拥有者以及运行用户
+user root;
+# 进程数，推荐匹配服务器cpu核数
+worker_processes  1;
+# 错误日志
+error_log /tmp/nginx/nginx.log;
+# 定义pid的文件 默认
+pid /run/nginx.pid;
+
+# 定义了处理连接相关的参数
+events {
+
+    # 最大并发连接数
+    worker_connections  1024;
+}
+
+http {</code></pre><p>​<br>​        # 添加此文件下.conf的配置文件<br>​        include /etc/nginx/conf.d/*.conf;<br>​        # 默认返回给用户的文件类型。<br>​        # 对于我们Flask应用来说，应该是动态生成的HTML文件 text/html;<br>​        default_type  application/octet-stream;<br>​<br>​        # 关于日志的参数保持默认<br>​<br>​        # 开启高效传输模式<br>​        sendfile            on;<br>​        # 减少网络报文段的数量<br>​        tcp_nopush          on;<br>​        tcp_nodelay         on;<br>​        # 保持连接的时间<br>​        keepalive_timeout   65;<br>​        # 最大块<br>​        types_hash_max_size 2048;</p>
+<p>​<br>​        server {<br>​            listen 80;                                          # 监听ipv4<br>​            listen       [::]:80 ipv6only=on default_server;    # 监听ipv6<br>​            # listen [::]:80    可同时监听ipv4、ipv6 若出错则采用上述方法<br>​            server_name xxx.com;                                 # 可写域名或者ip地址<br>​<br>​            # 定义了在请求未指定页面时所得到的默认页面。<br>​            # 这里我们是使用FlaskWeb应用生成，因此注释掉<br>​            # index index.html;<br>​<br>​            # /指访问路径，可加前缀 例：/test 则在此location下url都需要添加前缀<br>​            location / {<br>​                include uwsgi_params;<br>​                # 关键！当uwsgi和nginx使用socket连接时，连接通道。必须和uwsgi文件里的socke参数一致<br>​                uwsgi_pass 127.0.0.1:5001;</p>
+<p>​<br>​                # 访问静态资源时。在flask中可以将静态资源（如图片）放至staic供前端调用显示<br>​                root /项目地址;<br>​                # alias /项目地址<br>​                # root和alias是对应的 都是指定当url请求时查找服务器资源的路径<br>​                # alias 会将location的访问路径缺省再搜索服务器<br>​<br>​            }<br>​    }</p>
+<blockquote>
+<p>每行配置记得加 ; python写习惯了容易忘</p>
+</blockquote>
+<p>当监听多个端口时则多加一个server。不能在同一个服务里监听多个端口。</p>
+<p>另一个server使用443，配置https服务</p>
+<h5 id="https配置"><a href="#https配置" class="headerlink" title="https配置"></a>https配置</h5><blockquote>
+<p>此处只将相关配置，SSL证书、域名等获取方法请走百度</p>
+</blockquote>
+<p>https可以通过uwsgi配置，也可以通过nginx配置。</p>
+<p>按我们的模型逻辑，我们在nginx配置。首先申请SSL证书，然后下载相关文件获取到公钥密钥。_XXX.com_bundle.crt/2_XXX.com.key文件。上传至服务器（scp、xftp等方法都行），最好限制一下文件的读写权限。</p>
+<p>以下至列举出不同于http的配置参数。</p>
+<pre><code>server_name  www.example.com;
+server {
+    # https默认是443端口
+    listen       443 ssl http2 default_server;
+    listen       [::]:443 ssl http2 default_server;
+
+    # 公钥
+    ssl_certificate /etc/nginx/1_xx.cn_bundle.crt;
+    # 私钥
+    ssl_certificate_key /etc/nginx/2_xx.cn.key;</code></pre><p>​<br>​        # 会话缓存，并使缓存可以在机器间共享。1m大概包含4000个会话<br>​        # 简化握手阶段<br>​        ssl_session_cache shared:SSL:1m;<br>​        # 客户端可以重用会话缓存中ssl参数的过期时间。可以按需要增长。min<br>​        # 可减少多次握手运算占用CPU资源<br>​        ssl_session_timeout  10m;<br>​<br>​        # 指定SSL服务器端支持的协议版本<br>​        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;<br>​        # 加密套件<br>​        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;<br>​        # 有限服务器的加密套件<br>​        ssl_prefer_server_ciphers on;</p>
+<p>补一下私钥文件的相关信息</p>
+<pre><code>CSR：Cerificate Signing Request，证书签署请求文件，里面包含申请者的 DN（Distinguished Name，标识名）和公钥信息，在第三方证书颁发机构签署证书的时候需要提供。
+证书颁发机构拿到 CSR 后使用其根证书私钥对证书进行加密并生成 CRT 证书文件，里面包含证书加密信息以及申请者的 DN 及公钥信息。
+
+Key：证书申请者私钥文件，和证书里面的公钥配对使用，在 HTTPS 『握手』通讯过程需要使用私钥去解密客戶端发來的经过证书公钥加密的随机数信息，是 HTTPS 加密通讯过程非常重要的文件，在配置 HTTPS 的時候要用到</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flask/" rel="tag"># Flask</a>
+          
+            <a href="/tags/uwsgi/" rel="tag"># uwsgi</a>
+          
+            <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/12/Flask源码解析/" rel="prev" title="Flask源码解析">
+                Flask源码解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/header.jpg" alt="CAO RUNJIA">
+            
+              <p class="site-author-name" itemprop="name">CAO RUNJIA</p>
+              <p class="site-description motion-element" itemprop="description">PYTHON</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Sssmeb" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/weixin_41855723" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-copyright"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/8f4d80000566" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#名词解析"><span class="nav-number">1.</span> <span class="nav-text">名词解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#WSGI"><span class="nav-number">1.0.1.</span> <span class="nav-text">WSGI</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#werkzeug"><span class="nav-number">1.0.2.</span> <span class="nav-text">werkzeug</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#uWSGI"><span class="nav-number">1.0.3.</span> <span class="nav-text">uWSGI</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Nginx"><span class="nav-number">1.0.4.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#uWSGI与nginx的区别"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">uWSGI与nginx的区别</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#uwsgi"><span class="nav-number">1.0.5.</span> <span class="nav-text">uwsgi</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Flask"><span class="nav-number">1.0.6.</span> <span class="nav-text">Flask</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖安装"><span class="nav-number">2.</span> <span class="nav-text">依赖安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署流程"><span class="nav-number">3.</span> <span class="nav-text">部署流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、项目文件上传至服务器"><span class="nav-number">3.1.</span> <span class="nav-text">1、项目文件上传至服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#uwsgi-1"><span class="nav-number">3.2.</span> <span class="nav-text">uwsgi</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#操作"><span class="nav-number">3.2.1.</span> <span class="nav-text">操作</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nginx"><span class="nav-number">3.3.</span> <span class="nav-text">nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#nginx常见操作"><span class="nav-number">3.3.1.</span> <span class="nav-text">nginx常见操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#普通配置"><span class="nav-number">3.3.2.</span> <span class="nav-text">普通配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#https配置"><span class="nav-number">3.3.3.</span> <span class="nav-text">https配置</span></a></li></ol></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CAO RUNJIA</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

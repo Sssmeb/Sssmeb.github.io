@@ -264,7 +264,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/07/15/用Python实现PING/">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/08/09/关于数据库索引/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="CAO RUNJIA">
@@ -283,7 +283,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/15/用Python实现PING/" itemprop="url">用Python实现PING</a></h1>
+                <a class="post-title-link" href="/2019/08/09/关于数据库索引/" itemprop="url">关于数据库索引</a></h1>
         
 
         <div class="post-meta">
@@ -295,8 +295,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-15T20:51:03+08:00">
-                2019-07-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T16:25:26+08:00">
+                2019-08-09
               </time>
             
 
@@ -335,12 +335,18 @@
       
         
           
-          PING概述ping属于一个通信协议，是TCP/IP协议的一部分。利用“ping”命令可以检查网络是否连通，可以很好地分析和判定网络故障。
-PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet Control Messages Protocol）即因特网信报控制协议；回声
+          索引基础索引的作用是：
+
+加速查找
+约束
+
+索引优化是对查询性能优化最有效的手段了。索引能轻易将查询性能提高几个数量级，最优的索引有时比一个好的索引性能要好两个数量级。
+如果没有使用索引，相当于从前往后整个表进行查找。而使用索引，相当于拥有了一个目录，可以大大加速查找。
+创建索引的过程可以理解为数据
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/07/15/用Python实现PING/#more" rel="contents">
+            <a class="btn" href="/2019/08/09/关于数据库索引/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -391,7 +397,7 @@ PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet C
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/07/12/网络编程基础/">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/08/01/B、B-树的理解（数据库索引预热）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="CAO RUNJIA">
@@ -410,7 +416,7 @@ PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet C
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/12/网络编程基础/" itemprop="url">网络编程基础</a></h1>
+                <a class="post-title-link" href="/2019/08/01/B、B-树的理解（数据库索引预热）/" itemprop="url">B、B+树的理解（数据库索引预热）</a></h1>
         
 
         <div class="post-meta">
@@ -422,8 +428,8 @@ PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet C
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-12T12:08:13+08:00">
-                2019-07-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-01T19:21:59+08:00">
+                2019-08-01
               </time>
             
 
@@ -462,8 +468,265 @@ PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet C
       
         
           
-          [TOC]
+          为什么要有B树
+局部性原理：当一个数据被用到时，其附近的数据也通常会马上被使用。
+同样的数据，红黑树（二叉树）阶数更大，B树更短，查找的效率越高。
 
+B树B树大量应用在数据库和文件系统中。
+B树建立在二叉树和平衡二叉树的基础上。在二叉树中，每个结点只有一个元素。但是在B-Tree中，每个结点都可能包
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/08/01/B、B-树的理解（数据库索引预热）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/06/24/用Python实现PING/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/24/用Python实现PING/" itemprop="url">用Python实现PING</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-24T20:51:03+08:00">
+                2019-06-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          PING概述ping属于一个通信协议，是TCP/IP协议的一部分。利用“ping”命令可以检查网络是否连通，可以很好地分析和判定网络故障。
+PING ，用于测试网络连接量的程序。Ping发送一个ICMP（Internet Control Messages Protocol）即因特网信报控制协议；回声
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/24/用Python实现PING/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/06/12/网络编程基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/12/网络编程基础/" itemprop="url">网络编程基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-12T12:08:13+08:00">
+                2019-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          
 由于不同机器上的程序要通信，才产生了网络
 
 111基础知识基本架构
@@ -474,11 +737,267 @@ C/S架构
 服务端（server）：一直运行，等待请求
 客户端（client）：需要使用时，发送请求
 
-B/S架构基于浏览器（br
+B/S架构基于浏览器（broser）。
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/07/12/网络编程基础/#more" rel="contents">
+            <a class="btn" href="/2019/06/12/网络编程基础/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/05/12/Flask源码解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/12/Flask源码解析/" itemprop="url">Flask源码解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-12T17:26:49+08:00">
+                2019-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          两个核心依赖falsk主要依赖两个库 —— Werkzeug 和 Jinja。
+Jinja2由于大多数Web程序都需要渲染模板，与Jinja2集成可以减少大量的工作。此处不展开讨论。
+WerkzeugFlask的核心扩展就是Werkzeug。
+python Web框架都需要处理WSGI交互，它是为了
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/12/Flask源码解析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sssmeb.github.io/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="CAO RUNJIA">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CRJ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/" itemprop="url">Flask部署知识（Nginx+uWSGI+HTTPS）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-25T16:26:26+08:00">
+                2019-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          名词解析WSGI封装了处理HTTP响应、TCP连接等操作的接口。用户不需要自己实现接受HTTP请求、解析HTTP请求、发送HTTP响应等操作，不需要专注于HTTP规范等，可以专心编写Web业务。
+werkzeugflask自带WSGI工具包，可以搭建WSGI服务。但只用于开发，实际生产需要用更专业高
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/25/Flask部署知识（Nginx-uWSGI-HTTPS）/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -564,7 +1083,7 @@ B/S架构基于浏览器（br
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -577,7 +1096,7 @@ B/S架构基于浏览器（br
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
